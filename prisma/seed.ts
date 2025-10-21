@@ -12,6 +12,12 @@ async function main() {
   const users = await Promise.all([
     prisma.user.create({
       data: {
+        name: 'Facility Admin',
+        email: 'admin@shiftrx.com',
+      },
+    }),
+    prisma.user.create({
+      data: {
         name: 'Dr. Sarah Johnson',
         email: 'sarah.johnson@example.com',
       },
@@ -122,25 +128,25 @@ async function main() {
 
   console.log('Created shifts:', shifts.length);
 
-  // Create some sample applications
+  // Create some sample applications (skip admin user at index 0)
   const applications = await Promise.all([
     prisma.application.create({
       data: {
-        userId: users[0].id,
+        userId: users[1].id, // Dr. Sarah Johnson
         shiftId: shifts[0].id,
         status: 'APPLIED',
       },
     }),
     prisma.application.create({
       data: {
-        userId: users[1].id,
+        userId: users[2].id, // Nurse Mike Chen
         shiftId: shifts[0].id,
         status: 'APPLIED',
       },
     }),
     prisma.application.create({
       data: {
-        userId: users[0].id,
+        userId: users[1].id, // Dr. Sarah Johnson
         shiftId: shifts[2].id,
         status: 'APPLIED',
       },

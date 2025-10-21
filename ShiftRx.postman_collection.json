@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "ShiftRx API",
+    "description": "Healthcare staffing marketplace API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shiftId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "applicationId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Retrieve all users in the system"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shifts",
+      "item": [
+        {
+          "name": "Get All Shifts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts"]
+            },
+            "description": "Get all available shifts"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shifts with User Context",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "User ID to check if they have applied"
+                }
+              ]
+            },
+            "description": "Get shifts with userHasApplied flag for a specific user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shifts by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts?status=OPEN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "OPEN",
+                  "description": "OPEN | HIRED | CANCELLED"
+                }
+              ]
+            },
+            "description": "Filter shifts by status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shift by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts/{{shiftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts", "{{shiftId}}"]
+            },
+            "description": "Get detailed information about a specific shift"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shift by ID with User Context",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts/{{shiftId}}?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts", "{{shiftId}}"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Get shift details with user's application status"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Shift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Night Shift - Emergency Department\",\n  \"description\": \"Urgent care coverage needed for busy ER. Must have trauma experience.\",\n  \"facilityName\": \"City General Hospital\",\n  \"location\": \"San Francisco, CA\",\n  \"startsAt\": \"2025-10-22T20:00:00.000Z\",\n  \"endsAt\": \"2025-10-23T04:00:00.000Z\",\n  \"hourlyRateCents\": 8500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts"]
+            },
+            "description": "Create a new shift (admin only). hourlyRateCents is in cents (e.g., 8500 = $85.00)"
+          },
+          "response": []
+        },
+        {
+          "name": "Hire Provider",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"shiftId\": \"{{shiftId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts/hire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts", "hire"]
+            },
+            "description": "Hire a provider for a shift. Updates shift status to HIRED and application status to HIRED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Get User Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/applications?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "applications"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}",
+                  "description": "Required: User ID to get applications for"
+                }
+              ]
+            },
+            "description": "Get all applications for a specific user"
+          },
+          "response": []
+        },
+        {
+          "name": "Apply to Shift",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"shiftId\": \"{{shiftId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "applications"]
+            },
+            "description": "Create a new application for a shift. Prevents duplicate applications."
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw Application",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"WITHDRAWN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "applications", "{{applicationId}}"]
+            },
+            "description": "Update application status to WITHDRAWN"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Application",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/applications/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "applications", "{{applicationId}}"]
+            },
+            "description": "Delete an application"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Complete Hire Workflow",
+      "item": [
+        {
+          "name": "1. Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save first non-admin user ID for testing",
+                  "const response = pm.response.json();",
+                  "if (response && response.length > 1) {",
+                  "    pm.collectionVariables.set('userId', response[1].id);",
+                  "    console.log('Set userId:', response[1].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Step 1: Get users and save a userId to collection variable"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Get All Shifts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save first OPEN shift ID for testing",
+                  "const response = pm.response.json();",
+                  "if (response && response.length > 0) {",
+                  "    const openShift = response.find(s => s.status === 'OPEN');",
+                  "    if (openShift) {",
+                  "        pm.collectionVariables.set('shiftId', openShift.id);",
+                  "        console.log('Set shiftId:', openShift.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts"]
+            },
+            "description": "Step 2: Get shifts and save an OPEN shiftId to collection variable"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Apply to Shift",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save application ID for hiring",
+                  "const response = pm.response.json();",
+                  "if (response && response.id) {",
+                  "    pm.collectionVariables.set('applicationId', response.id);",
+                  "    console.log('Set applicationId:', response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"shiftId\": \"{{shiftId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "applications"]
+            },
+            "description": "Step 3: Apply to the shift and save applicationId"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Hire Provider",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"shiftId\": \"{{shiftId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts/hire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts", "hire"]
+            },
+            "description": "Step 4: Hire the provider using the saved IDs"
+          },
+          "response": []
+        },
+        {
+          "name": "5. Verify Shift is Hired",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/shifts/{{shiftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shifts", "{{shiftId}}"]
+            },
+            "description": "Step 5: Verify the shift status is now HIRED"
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete workflow to test the hire endpoint. Run requests 1-5 in order. Variables are automatically populated."
+    }
+  ]
+}

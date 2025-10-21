@@ -37,3 +37,48 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const {
+      title,
+      description,
+      facilityName,
+      location,
+      startsAt,
+      endsAt,
+      hourlyRateCents,
+    } = body;
+
+    // Validate required fields
+    if (!title || !facilityName || !startsAt || !endsAt || !hourlyRateCents) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Create the shift
+    const shift = await prisma.shift.create({
+      data: {
+        title,
+        description,
+        facilityName,
+        location,
+        startsAt: new Date(startsAt),
+        endsAt: new Date(endsAt),
+        hourlyRateCents,
+        status: 'OPEN',
+      },
+    });
+
+    return NextResponse.json(shift, { status: 201 });
+  } catch (error) {
+    console.error('Error creating shift:', error);
+    return NextResponse.json(
+      { error: 'Failed to create shift' },
+      { status: 500 }
+    );
+  }
+}

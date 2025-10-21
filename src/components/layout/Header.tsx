@@ -3,15 +3,21 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserSwitcher } from '@/components/UserSwitcher';
+import { useUser } from '@/contexts/UserContext';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Plus } from 'lucide-react';
 
 export function Header() {
   const pathname = usePathname();
+  const { currentUser } = useUser();
 
   const navItems = [
     { href: '/', label: 'Shifts' },
     { href: '/applications', label: 'My Applications' },
   ];
+
+  const isAdmin = currentUser?.email === 'admin@shiftrx.com';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,7 +48,17 @@ export function Header() {
           </nav>
         </div>
 
-        <UserSwitcher />
+        <div className="flex items-center gap-4">
+          {isAdmin && (
+            <Link href="/shifts/create">
+              <Button size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Shift
+              </Button>
+            </Link>
+          )}
+          <UserSwitcher />
+        </div>
       </div>
     </header>
   );
