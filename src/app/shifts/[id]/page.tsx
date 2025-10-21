@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   ArrowLeft,
   Briefcase,
+  User,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -139,6 +140,23 @@ export default function ShiftDetailsPage({
                   <p className="whitespace-pre-line text-muted-foreground">
                     {shift.description}
                   </p>
+                </div>
+              )}
+
+              {/* Hired Provider */}
+              {shift.status === 'HIRED' && shift.hiredProvider && (
+                <div className="rounded-lg bg-green-50 p-4">
+                  <h3 className="mb-2 flex items-center gap-2 font-semibold text-green-900">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Shift Filled
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5 text-green-700" />
+                    <div>
+                      <p className="font-medium text-green-900">{shift.hiredProvider.name}</p>
+                      <p className="text-sm text-green-700">{shift.hiredProvider.email}</p>
+                    </div>
+                  </div>
                 </div>
               )}
 

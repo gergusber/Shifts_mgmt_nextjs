@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { ApplicationService } from '@/services/ApplicationService';
 
 export async function PATCH(
   request: NextRequest,
@@ -17,32 +17,19 @@ export async function PATCH(
       );
     }
 
-    const application = await prisma.application.findUnique({
-      where: { id },
-    });
-
-    if (!application) {
-      return NextResponse.json(
-        { error: 'Application not found' },
-        { status: 404 }
-      );
-    }
-
-    const updatedApplication = await prisma.application.update({
-      where: { id },
-      data: { status },
-      include: {
-        shift: true,
-      },
+    const updatedApplication = await ApplicationService.updateApplication({
+      id,
+      status,
     });
 
     return NextResponse.json(updatedApplication);
   } catch (error) {
     console.error('Error updating application:', error);
-    return NextResponse.json(
-      { error: 'Failed to update application' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Failed to update application';
+    const status =
+      message === 'id and status are required' ? 400 :
+      message === 'Application not found' ? 404 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 
@@ -52,28 +39,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-
-    const application = await prisma.application.findUnique({
-      where: { id },
-    });
-
-    if (!application) {
-      return NextResponse.json(
-        { error: 'Application not found' },
-        { status: 404 }
-      );
-    }
-
-    await prisma.application.delete({
-      where: { id },
-    });
-
+    await ApplicationService.deleteApplication(id);
     return NextResponse.json({ message: 'Application deleted successfully' });
   } catch (error) {
     console.error('Error deleting application:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete application' },
-      { status: 500 }
-    );
+        // TODO: Lets remove this once we have a proper error handling system to get the status code from the error
+
+    const message = error instanceof Error ? error.message : 'Failed to delete application';
+    const status =
+      message === 'id is required' ? 400 :
+      message === 'Application not found' ? 404 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

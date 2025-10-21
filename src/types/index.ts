@@ -15,6 +15,7 @@ export interface Shift {
   hourlyRateCents: number;
   status: 'OPEN' | 'HIRED' | 'CANCELLED';
   hiredProviderId?: string;
+  hiredProvider?: User;
   userHasApplied?: boolean;
   applications?: Application[];
 }

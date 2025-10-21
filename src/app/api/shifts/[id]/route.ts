@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { ShiftService } from '@/services/ShiftService';
 
 export async function GET(
   request: NextRequest,
@@ -8,32 +8,9 @@ export async function GET(
   try {
     const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || undefined;
 
-    const shift = await prisma.shift.findUnique({
-      where: { id },
-      include: {
-        applications: userId
-          ? {
-              where: { userId },
-              select: { id: true, status: true },
-            }
-          : {
-              select: {
-                id: true,
-                status: true,
-                userId: true,
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                  },
-                },
-              },
-            },
-      },
-    });
+    const shift = await ShiftService.getShiftById(id, userId);
 
     if (!shift) {
       return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
