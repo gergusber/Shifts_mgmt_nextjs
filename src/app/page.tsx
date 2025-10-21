@@ -1,13 +1,46 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useShifts } from '@/hooks/useShifts';
 import { ShiftCard } from '@/components/shifts/ShiftCard';
+import { ShiftFilters } from '@/components/shifts/ShiftFilters';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Shift } from '@/types';
 
 export default function Home() {
   const { currentUser } = useUser();
-  const { data: shifts, isLoading, error } = useShifts({ userId: currentUser?.id });
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date-asc');
+
+  const { data: shifts, isLoading, error } = useShifts({
+    userId: currentUser?.id,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+  });
+
+  // Client-side sorting
+  const sortedShifts = useMemo(() => {
+    if (!shifts) return [];
+
+    const sorted = [...shifts];
+
+    switch (sortBy) {
+      case 'date-asc':
+        return sorted.sort(
+          (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+        );
+      case 'date-desc':
+        return sorted.sort(
+          (a, b) => new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime()
+        );
+      case 'rate-asc':
+        return sorted.sort((a, b) => a.hourlyRateCents - b.hourlyRateCents);
+      case 'rate-desc':
+        return sorted.sort((a, b) => b.hourlyRateCents - a.hourlyRateCents);
+      default:
+        return sorted;
+    }
+  }, [shifts, sortBy]);
 
   if (error) {
     return (
@@ -31,6 +64,13 @@ export default function Home() {
         </p>
       </div>
 
+      <ShiftFilters
+        status={statusFilter}
+        sortBy={sortBy}
+        onStatusChange={setStatusFilter}
+        onSortChange={setSortBy}
+      />
+
       {isLoading ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
@@ -42,9 +82,9 @@ export default function Home() {
             </div>
           ))}
         </div>
-      ) : shifts && shifts.length > 0 ? (
+      ) : sortedShifts && sortedShifts.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {shifts.map((shift) => (
+          {sortedShifts.map((shift) => (
             <ShiftCard key={shift.id} shift={shift} />
           ))}
         </div>
@@ -53,7 +93,9 @@ export default function Home() {
           <div className="text-center">
             <h3 className="text-lg font-semibold">No shifts available</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Check back later for new opportunities
+              {statusFilter !== 'all'
+                ? 'No shifts match your filters'
+                : 'Check back later for new opportunities'}
             </p>
           </div>
         </div>
