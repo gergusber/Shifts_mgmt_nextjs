@@ -1,36 +1,164 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShiftRx - Healthcare Staffing Marketplace
+
+A Next.js application for healthcare facilities to post shifts and providers to apply for them.
+
+## Tech Stack
+
+- **Framework**: Next.js 15.5.6 with App Router
+- **Language**: TypeScript 5
+- **Database**: SQLite with Prisma ORM
+- **State Management**: TanStack React Query 5.90.2
+- **UI Components**: shadcn/ui with Radix UI primitives
+- **Styling**: Tailwind CSS v4
+- **Form Validation**: React Hook Form + Zod
+- **Notifications**: Sonner
+
+## Features
+
+- Browse and filter available shifts
+- Apply to shifts and withdraw applications
+- View application history
+- Admin users can create new shifts
+- Hire providers for shifts (testable via API)
+- View hired provider information on shift details
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Set Up Database
+
+Push the Prisma schema to create the database:
+
+```bash
+npm run db:push
+```
+
+### 3. Seed the Database
+
+Populate the database with sample data:
+
+```bash
+npm run db:seed
+```
+
+This creates:
+- **5 users**: 1 admin + 4 healthcare providers
+- **6 sample shifts** with various specialties
+- **3 sample applications**
+
+### 4. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Sample Users
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The seed script creates these users:
 
-## Learn More
+- **admin@shiftrx.com** - Facility Admin (can create shifts)
+- **sarah.johnson@example.com** - Dr. Sarah Johnson
+- **mike.chen@example.com** - Nurse Mike Chen
+- **emily.rodriguez@example.com** - Dr. Emily Rodriguez
+- **james.wilson@example.com** - Nurse James Wilson
 
-To learn more about Next.js, take a look at the following resources:
+Switch between users using the dropdown in the header.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Available Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run db:push` - Push Prisma schema to database
+- `npm run db:seed` - Seed database with sample data
+- `npm run db:studio` - Open Prisma Studio (visual database browser)
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/                    # Next.js App Router pages and API routes
+│   ├── api/               # API endpoints
+│   │   ├── users/
+│   │   ├── shifts/
+│   │   └── applications/
+│   ├── applications/      # User applications page
+│   └── shifts/            # Shift pages
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── layout/           # Layout components (Header)
+│   ├── shifts/           # Shift-related components
+│   └── applications/     # Application-related components
+├── contexts/             # React Context providers
+├── hooks/                # React Query hooks
+├── lib/                  # Utilities and configurations
+├── services/             # Business logic layer
+│   ├── UserService.ts
+│   ├── ShiftService.ts
+│   └── ApplicationService.ts
+└── types/                # TypeScript type definitions
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Endpoints
+
+### Users
+- `GET /api/users` - Get all users
+
+### Shifts
+- `GET /api/shifts` - Get all shifts (with optional filters)
+- `GET /api/shifts/[id]` - Get shift by ID
+- `POST /api/shifts` - Create new shift (admin only)
+- `POST /api/shifts/hire` - Hire a provider for a shift
+
+### Applications
+- `GET /api/applications` - Get applications by user
+- `POST /api/applications` - Apply to a shift
+- `PATCH /api/applications/[id]` - Update application status
+- `DELETE /api/applications/[id]` - Delete application
+
+## Testing the Hire Endpoint
+
+You can test the hire endpoint using the included Postman collection:
+
+```bash
+# Import ShiftRx.postman_collection.json into Postman
+# Run the "Complete Hire Workflow" folder requests 1-5 in sequence
+```
+
+Or use curl:
+
+```bash
+# 1. Get shifts to find a shift ID
+curl http://localhost:3000/api/shifts
+
+# 2. Get applications for that shift
+curl http://localhost:3000/api/shifts/{shiftId}
+
+# 3. Hire a provider
+curl -X POST http://localhost:3000/api/shifts/hire \
+  -H "Content-Type: application/json" \
+  -d '{
+    "applicationId": "APPLICATION_ID",
+    "shiftId": "SHIFT_ID"
+  }'
+```
+
+## Architecture
+
+This application follows a **service layer architecture**:
+
+- **Routes**: Handle HTTP concerns (request/response)
+- **Services**: Contain business logic and database operations
+- **React Query**: Manages server state and caching
+- **React Context**: Manages client state (user selection)
+
+## License
+
+This project is licensed under the MIT License.
