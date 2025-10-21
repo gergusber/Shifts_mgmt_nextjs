@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import {
   MapPin,
   Building2,
   CheckCircle2,
+  ArrowRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -101,9 +103,16 @@ export function ShiftCard({ shift }: ShiftCardProps) {
           </div>
         </div>
 
-        <div className="pt-2">
+        <div className="flex flex-col gap-2 pt-2">
+          <Link href={`/shifts/${shift.id}`}>
+            <Button variant="outline" className="w-full">
+              View Details
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+
           {shift.userHasApplied ? (
-            <div className="flex items-center gap-2 text-sm text-green-600">
+            <div className="flex items-center justify-center gap-2 text-sm text-green-600">
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-medium">Applied</span>
             </div>
@@ -116,7 +125,7 @@ export function ShiftCard({ shift }: ShiftCardProps) {
               {applyMutation.isPending ? 'Applying...' : 'Apply to Shift'}
             </Button>
           ) : !currentUser ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground">
               Select a user to apply
             </p>
           ) : (
